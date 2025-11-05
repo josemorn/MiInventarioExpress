@@ -1,0 +1,146 @@
+<div class="container py-4">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow h-100">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-chat-dots"></i> Chat en Tiempo Real</h4>
+        </div>
+        <div class="card-body d-flex flex-column" style="height: 500px;">
+          <div id="messages" class="flex-grow-1 overflow-auto mb-3 p-3 bg-light rounded">
+            <div class="text-center text-muted">
+              <i class="bi bi-chat-square-text fs-1"></i>
+              <p>Bienvenido al chat. Envía tu primer mensaje.</p>
+            </div>
+          </div>
+          <div id="typingIndicator" class="text-muted small mb-2" style="min-height: 20px;"></div>
+          <form id="chatForm" class="d-flex gap-2">
+            <input type="text" id="messageInput" class="form-control" placeholder="Escribe un mensaje..." autocomplete="off" required>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-send"></i> Enviar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0"><i class="bi bi-people"></i> Usuarios Conectados</h5>
+        </div>
+        <div class="card-body">
+          <div id="activeUsers">
+            <div class="text-center text-muted">
+              <i class="bi bi-person-check fs-1"></i>
+              <p>Solo tú estás conectado</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const username = '{{username}}';
+  const messagesDiv = document.getElementById('messages');
+  const chatForm = document.getElementById('chatForm');
+  const messageInput = document.getElementById('messageInput');
+  const activeUsersDiv = document.getElementById('activeUsers');
+  const typingIndicator = document.getElementById('typingIndicator');
+
+  let typingTimer;
+
+  socket.emit('join', username);
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    
+    if (message) {
+      socket.emit('chat-message', { username, message });
+      messageInput.value = '';
+      socket.emit('stop-typing');
+    }
+  });
+
+  socket.on('chat-message', (data) => {
+    const isOwnMessage = data.username === username;
+    const messageClass = isOwnMessage ? 'bg-primary text-white' : 'bg-white';
+    const alignment = isOwnMessage ? 'text-end' : '';
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `mb-3 ${alignment}`;
+    messageElement.innerHTML = `
+      <div class="d-inline-block ${messageClass} p-2 rounded shadow-sm" style="max-width: 70%;">
+        <strong>${escapeHtml(data.username)}</strong>
+        <p class="mb-0">${escapeHtml(data.message)}</p>
+        <small class="opacity-75">${data.timestamp}</small>
+      </div>
+    `;
+    
+    const welcomeMsg = messagesDiv.querySelector('.text-center');
+    if (welcomeMsg) welcomeMsg.remove();
+    
+    messagesDiv.appendChild(messageElement);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+
+  socket.on('user-joined', (joinedUsername) => {
+    addSystemMessage(`${joinedUsername} se unió al chat`);
+  });
+
+  socket.on('user-left', (leftUsername) => {
+    addSystemMessage(`${leftUsername} salió del chat`);
+  });
+
+  socket.on('active-users', (users) => {
+    if (users.length === 1) {
+      activeUsersDiv.innerHTML = `
+        <div class="text-center text-muted">
+          <i class="bi bi-person-check fs-1"></i>
+          <p>Solo tú estás conectado</p>
+        </div>
+      `;
+    } else {
+      activeUsersDiv.innerHTML = users.map(user => `
+        <div class="d-flex align-items-center mb-2">
+          <i class="bi bi-circle-fill text-success me-2" style="font-size: 8px;"></i>
+          <span>${escapeHtml(user)}</span>
+        </div>
+      `).join('');
+    }
+  });
+
+  messageInput.addEventListener('input', () => {
+    socket.emit('typing', username);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+      socket.emit('stop-typing');
+    }, 1000);
+  });
+
+  socket.on('typing', (typingUsername) => {
+    typingIndicator.textContent = `${typingUsername} está escribiendo...`;
+  });
+
+  socket.on('stop-typing', () => {
+    typingIndicator.textContent = '';
+  });
+
+  function addSystemMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.className = 'text-center text-muted small mb-2';
+    messageElement.innerHTML = `<em>${escapeHtml(message)}</em>`;
+    messagesDiv.appendChild(messageElement);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+</script>

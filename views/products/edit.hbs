@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-warning">
+          <h3 class="mb-0"><i class="bi bi-pencil"></i> Editar Producto</h3>
+        </div>
+        <div class="card-body p-4">
+          {{#if errors}}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {{#each errors}}
+              <li>{{this.msg}}</li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}}
+
+          <form method="POST" action="/productos/editar/{{product._id}}" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre del Producto *</label>
+                <input type="text" class="form-control" name="nombre" value="{{product.nombre}}" required>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Precio *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" name="precio" value="{{product.precio}}" step="0.01" min="0" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" name="stock" value="{{product.stock}}" min="0">
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Categoría *</label>
+                <select class="form-select" name="categoria" required>
+                  <option value="Electrónica" {{#eq product.categoria "Electrónica"}}selected{{/eq}}>Electrónica</option>
+                  <option value="Ropa" {{#eq product.categoria "Ropa"}}selected{{/eq}}>Ropa</option>
+                  <option value="Alimentos" {{#eq product.categoria "Alimentos"}}selected{{/eq}}>Alimentos</option>
+                  <option value="Hogar" {{#eq product.categoria "Hogar"}}selected{{/eq}}>Hogar</option>
+                  <option value="Otros" {{#eq product.categoria "Otros"}}selected{{/eq}}>Otros</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descripción *</label>
+              <textarea class="form-control" name="descripcion" rows="4" required>{{product.descripcion}}</textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Imagen Actual:</label>
+              <div class="mb-2">
+                <img src="{{product.imagen}}" alt="{{product.nombre}}" class="img-thumbnail" style="max-width: 200px;">
+              </div>
+              <label class="form-label">Cambiar Imagen (opcional)</label>
+              <input type="file" class="form-control" name="imagen" accept="image/*" onchange="previewImage(event)">
+            </div>
+
+            <div id="imagePreview" class="mb-3 d-none">
+              <label class="form-label">Nueva Vista Previa:</label>
+              <div>
+                <img id="preview" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px;">
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-warning">
+                <i class="bi bi-save"></i> Actualizar Producto
+              </button>
+              <a href="/productos" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('preview').src = e.target.result;
+        document.getElementById('imagePreview').classList.remove('d-none');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
