@@ -2,12 +2,6 @@
 
 Sistema de gestión de inventario con autenticación y chat en tiempo real.
 
-##  Información del Estudiante
-
-- **Nombre:** [Tu Nombre Completo]
-- **Carrera:** [Tu Carrera]
-- **Universidad:** Universidad Politécnica Salesiana
-- **Materia:** Aplicaciones Web
 
 ##  Funcionalidades Implementadas
 
@@ -121,52 +115,6 @@ Sistema de gestión de inventario con autenticación y chat en tiempo real.
    http://localhost:3000
    ```
 
-##  Estructura del Proyecto
-
-```
-MiInventarioExpress/
-├── config/
-│   ├── database.js          # Configuración de MongoDB
-│   └── multer.js             # Configuración de Multer
-├── controllers/
-│   ├── authController.js     # Controlador de autenticación
-│   └── productController.js  # Controlador de productos
-├── middleware/
-│   ├── auth.js               # Middleware de autenticación
-│   └── validators.js         # Validadores
-├── models/
-│   ├── User.js               # Modelo de Usuario
-│   └── Product.js            # Modelo de Producto
-├── public/
-│   ├── css/
-│   │   └── style.css         # Estilos personalizados
-│   ├── js/
-│   │   └── main.js           # JavaScript del cliente
-│   └── images/               # Imágenes estáticas
-├── routes/
-│   ├── authRoutes.js         # Rutas de autenticación
-│   └── productRoutes.js      # Rutas de productos
-├── uploads/                  # Imágenes subidas
-├── views/
-│   ├── layouts/
-│   │   └── main.hbs          # Layout principal
-│   ├── auth/
-│   │   ├── login.hbs         # Vista de login
-│   │   └── register.hbs      # Vista de registro
-│   ├── products/
-│   │   ├── list.hbs          # Lista de productos
-│   │   ├── create.hbs        # Crear producto
-│   │   └── edit.hbs          # Editar producto
-│   ├── chat.hbs              # Chat en tiempo real
-│   └── error.hbs             # Página de error
-├── .env                      # Variables de entorno
-├── .gitignore                # Archivos ignorados por Git
-├── package.json              # Dependencias y scripts
-├── server.js                 # Archivo principal
-└── README.md                 # Este archivo
-```
-
-##  Pruebas
 
 ### Pruebas con Postman
 
@@ -232,22 +180,3 @@ MiInventarioExpress/
 - Protección contra inyección SQL (NoSQL)
 - Sesiones seguras con express-session
 - Middleware de autenticación en rutas protegidas
-
-##  Notas Adicionales
-
-- Las imágenes se almacenan en la carpeta `uploads/`
-- La sesión expira después de 24 horas de inactividad
-- El chat funciona solo cuando hay usuarios conectados
-- Se recomienda usar MongoDB Atlas para producción
-
-##  Autor
-
-[Tu Nombre] - Universidad Politécnica Salesiana
-
-##  Licencia
-
-Este proyecto fue desarrollado con fines educativos para la materia de Aplicaciones Web.
-
----
-
-**Universidad Politécnica Salesiana - 2025**
